@@ -1,0 +1,21 @@
+{
+  "common": {
+    "happyReading": "閱讀愉快",
+    "readMore": "閱讀更多",
+    "allPosts": "所有文章"
+  },
+  "home": {
+    "recentPosts": "最新文章",
+    "noPosts": "目前沒有文章。"
+  },
+  "blog": {
+    "publishedOn": "發布於"
+  },
+  "nav": {
+    "home": "首頁",
+    "blog": "部落格",
+    "tags": "標籤",
+    "projects": "專案",
+    "about": "關於"
+  }
+}

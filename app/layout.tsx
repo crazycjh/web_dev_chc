@@ -6,13 +6,11 @@ import 'remark-github-blockquote-alert/alert.css';
 
 import { Metadata } from 'next';
 import { Outfit } from 'next/font/google';
-import { SearchProvider, SearchConfig } from 'pliny/search';
+import { getLocale } from 'next-intl/server';
 // import { Analytics, AnalyticsConfig } from 'pliny/analytics';
 
-import Header from '@/components/header';
-import Footer from '@/components/footer';
 import siteMetadata from '@/data/siteMetadata';
-import { SectionContainer, TiltedGridBackground } from '@/components/ui';
+import { TiltedGridBackground } from '@/components/ui';
 
 import { ThemeProviders } from './theme-providers';
 import { UmamiAnalytics } from '@/components/analytics/umami';
@@ -64,11 +62,12 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const basePath = process.env.BASE_PATH || '';
+  const locale = await getLocale();
 
   return (
-    <html lang={siteMetadata.language} className={`${FONT_OUTFIT.variable} scroll-smooth`} suppressHydrationWarning>
+    <html lang={locale} className={`${FONT_OUTFIT.variable} scroll-smooth`} suppressHydrationWarning>
       <link rel="apple-touch-icon" sizes="76x76" href={`${basePath}/static/favicons/apple-touch-icon.png`} />
       <link rel="icon" type="image/png" sizes="32x32" href="/static/favicons/tennis-racquet.png" />
       <link rel="icon" type="image/png" sizes="16x16" href="/static/favicons/tennis-racquet.png" />
@@ -84,13 +83,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ThemeProviders>
           {/* <Analytics analyticsConfig={siteMetadata.analytics as AnalyticsConfig} /> */}
           <UmamiAnalytics websiteId={siteMetadata.analytics?.umamiAnalytics?.umamiWebsiteId} />
-          <SectionContainer>
-            <SearchProvider searchConfig={siteMetadata.search as SearchConfig}>
-              <Header />
-              <main className="mb-auto mt-20">{children}</main>
-              <Footer />
-            </SearchProvider>
-          </SectionContainer>
+          {children}
         </ThemeProviders>
       </body>
     </html>

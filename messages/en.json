@@ -1,0 +1,21 @@
+{
+  "common": {
+    "happyReading": "Happy reading",
+    "readMore": "Read more",
+    "allPosts": "All Posts"
+  },
+  "home": {
+    "recentPosts": "Recent Posts",
+    "noPosts": "No posts found."
+  },
+  "blog": {
+    "publishedOn": "Published on"
+  },
+  "nav": {
+    "home": "Home",
+    "blog": "Blog",
+    "tags": "Tags",
+    "projects": "Projects",
+    "about": "About"
+  }
+}

@@ -53,7 +53,7 @@ export default function AuthorLayout({ children, content }: Props) {
 
           <div className="prose max-w-none pb-8 dark:prose-dark xl:col-span-2">
             <h2>
-              Hello, folks! <Twemoji className="mx-2" emoji="waving-hand" /> I'm Trong Khanh (aka Karhdo)
+              Hello, folks! <Twemoji className="mx-2" emoji="waving-hand" /> I'm Chun Hao Chen
             </h2>
             <p>
               I have a passion for <strong>JavaScript/TypeScript</strong> and website development. I'm currently a

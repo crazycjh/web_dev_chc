@@ -1,7 +1,7 @@
 'use client';
 
 import clsx from 'clsx';
-import { usePathname } from 'next/navigation';
+import { usePathname } from '@/i18n/routing';
 
 import siteMetadata from '@/data/siteMetadata';
 import headerNavLinks from '@/data/headerNavLinks';
@@ -14,6 +14,7 @@ import MobileNav from './MobileNav';
 import ThemeSwitch from './ThemeSwitch';
 // import SearchButton from './SearchButton';
 import AnalyticsLink from './AnalyticsLink';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
 
 const Header = () => {
   const pathname = usePathname();
@@ -62,6 +63,7 @@ const Header = () => {
             className="hidden h-4 w-px shrink-0 bg-gray-200 dark:bg-gray-600 md:block"
           />
           <div className="flex items-center">
+            <LanguageSwitcher />
             <AnalyticsLink />
             <ThemeSwitch />
             {/* <SearchButton /> */}

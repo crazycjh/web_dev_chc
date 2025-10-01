@@ -2,6 +2,7 @@
 
 import Snowfall from 'react-snowfall';
 import { formatDate } from 'pliny/utils/formatDate';
+import { useTranslations } from 'next-intl';
 // import NewsletterForm from 'pliny/ui/NewsletterForm';
 
 import siteMetadata from '@/data/siteMetadata';
@@ -20,18 +21,9 @@ import {
 const MAX_DISPLAY = 5;
 
 export default function Home({ posts }) {
+  const t = useTranslations();
   return (
     <div className="relative">
-      <Snowfall
-        snowflakeCount={60}
-        style={{
-          zIndex: -1,
-          width: '100vw',
-          height: '100vh',
-          position: 'fixed',
-        }}
-      />
-
       {/* Introduce myself */}
       <div className="mt-8 dark:divide-gray-700 md:mt-8">
         <Greeting />
@@ -57,13 +49,13 @@ export default function Home({ posts }) {
       <div className="divide-y divide-gray-200 dark:divide-gray-700">
         <div className="space-y-2 py-6 md:space-y-5">
           <h1 className="text-3xl font-extrabold leading-9 tracking-tight text-gray-900 dark:text-gray-100 sm:text-4xl sm:leading-10 md:text-5xl md:leading-14">
-            Recent Posts
+            {t('home.recentPosts')}
           </h1>
           <p className="!mt-2 text-lg leading-7 text-gray-500 dark:text-gray-400">{siteMetadata.description}</p>
         </div>
 
         <ul className="divide-y divide-gray-200 dark:divide-gray-700">
-          {!posts.length && 'No posts found.'}
+          {!posts.length && t('home.noPosts')}
           {posts.slice(0, MAX_DISPLAY).map((post) => {
             const { slug, date, title, summary, tags } = post;
             return (
@@ -98,7 +90,7 @@ export default function Home({ posts }) {
                           className="text-primary hover:text-sky-600 dark:hover:text-sky-400"
                           aria-label={`Read "${title}"`}
                         >
-                          Read more &rarr;
+                          {t('common.readMore')} &rarr;
                         </Link>
                       </div>
                     </div>
@@ -113,7 +105,7 @@ export default function Home({ posts }) {
       {posts.length > MAX_DISPLAY && (
         <div className="flex justify-end text-base font-medium leading-6">
           <Link href="/blog" className="text-primary hover:text-sky-600 dark:hover:text-sky-400" aria-label="All posts">
-            All Posts &rarr;
+            {t('common.allPosts')} &rarr;
           </Link>
         </div>
       )}
