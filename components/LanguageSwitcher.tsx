@@ -17,7 +17,7 @@ export default function LanguageSwitcher() {
   const handleLocaleChange = (newLocale: string) => {
     router.replace(pathname, { locale: newLocale });
   };
-2
+
   return (
     <div className="flex items-center gap-2">
       <select

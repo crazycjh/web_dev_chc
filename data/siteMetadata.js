@@ -33,11 +33,9 @@ const siteMetadata = {
     },
   },
   */
-  /*
   newsletter: {
-    provider: 'buttondown',
+    provider: '',
   },
-  */
   /*
   comments: {
     provider: 'giscus',

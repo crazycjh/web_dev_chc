@@ -7,18 +7,6 @@ interface ThreadsIconProps {
   className?: string;
 }
 
-export const ThreadsIcon: React.FC<ThreadsIconProps> = ({
-  size = 24,
-  strokeWidth = 1,
-  className = ''
-}) => {
-  return (
-    <Image
-      src="/static/social/threads.png"
-      alt="Threads"
-      width={size}
-      height={size}
-      className={className}
-    />
-  );
+export const ThreadsIcon: React.FC<ThreadsIconProps> = ({ size = 24, strokeWidth = 1, className = '' }) => {
+  return <Image src="/static/social/threads.png" alt="Threads" width={size} height={size} className={className} />;
 };
