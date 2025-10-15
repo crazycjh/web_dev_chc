@@ -7,8 +7,9 @@ import AuthorLayout from '@/layouts/AuthorLayout';
 
 export const metadata = genPageMetadata({ title: 'About' });
 
-export default function Page() {
-  const author = allAuthors.find((p) => p.slug === 'default') as Authors;
+export default async function Page({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const author = allAuthors.find((p) => p.slug === `default.${locale}`) as Authors;
   const mainContent = coreContent(author);
 
   return (

@@ -52,6 +52,7 @@ const Header = () => {
                       ? 'bg-gray-200 dark:bg-primary-600'
                       : 'hover:bg-gray-200 dark:hover:bg-primary-600'
                   )}
+                  {...(link.external && { target: '_blank', rel: 'noopener noreferrer' })}
                 >
                   <span data-umami-event={`nav-${link.href.replace('/', '')}`}>{link.title}</span>
                 </Link>

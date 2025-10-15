@@ -1,279 +1,158 @@
 ---
-title: 'Exploring module in NestJS'
-date: '2023-12-10'
-lastmod: '2023-12-10'
-tags: ['nestjs', 'typescript', 'javascript', 'design-patterns']
+title: 'Day 1: What Is a Pure Function? Why Should React Components Stay Pure?'
+date: '2025-10-16'
+lastmod: '2025-10-16'
+tags: ['reactjs']
 summary: 'Modules are crucial components at the center of NestJS. In this post, we will take a closer look at what modules are in NestJS.'
 ---
 
 import Twemoji from './components/ui/Twemoji';
 
-## Introduction
+# **Day 1: What Is a Pure Function? Why Should React Components Stay Pure?**
 
-Modules are crucial components at the center of NestJS. In this post, we'll take a closer look at what modules are in NestJS.
+When learning React, you’ve probably heard this line:
 
-A module is a class annotated with a `@Module()` decorator. The `@Module()` decorator provides metadata that **Nest** makes use of to organize the application structure:
+> A React component should be a **pure function**.
 
-- Each application has at least one module, a **root module**.
-- In **NestJS** modules are strongly recommended as an effective way to organize your components.
-- Each module will encapsulate a set of closely related functions.
+But what exactly is a pure function?
+And why is it so important in React?
+Let’s start from the basics.
 
-![Diagram Module In NestJS](/static/images/blogs/module-in-nestjs.png)
+---
 
-The decorator `@Module()` takes a single object whose properties describe the module:
+## **What Is a Pure Function?**
 
-```ts:modules/product/product.module.ts showLineNumbers
-import { Module } from '@nestjs/common';
+A pure function has two key rules:
 
-import CategoryModule from 'modules/category.module'; // Expose route controller.
+1. **Same input → always the same output**
+2. **No side effects**
 
-import ProductController from './product.controller'; // Expose route controller.
-import ProductService from './product.service';       // Business Logic
-import ProductRepository from './product.repository'; // Data Access
+### Example
 
-@Module({
-  imports: [CategoryModule],
-  controllers: [ProductsController],
-  providers: [ProductService, ProductRepository],
-  exports: [ProductService],
-});
+```js
+// ✅ Pure function
+function add(a, b) {
+  return a + b;
+}
 
-export class ProductModule {}
-```
-
-- `provider`: The Nest injector will create providers that can be shared within this module at a minimum.
-- `controllers`: The set of controllers defined in this module
-- `imports`: The list of imported modules that export the providers
-- `exports`: The subset of `providers` that are provided by this module and should be available in other modules which import this module.
-
-## Types Of Modules In NestJS
-
-### Feature Module
-
-- A **feature module** simply organizes code relevant for a specific feature, keeping code organized and establishing clear boundaries.
-
-- To demonstrate this, we'll create the `ProductModule` (responsible for encapsulating Product logic and endpoints).
-
-```ts:modules/product/product.module.ts showLineNumbers
-import { Module } from '@nestjs/common';
-
-import ProductController from './product.controller';
-import ProductService from './product.service';
-
-@Module({
-  controllers: [ProductController],
-  providers: [ProductService],
-})
-export default class ProductModule {}
-```
-
-- The last thing we need to do is import this module into the root module (the `AppModule`, defined in the `app.module.ts` file).
-
-```ts:app.module.ts showLineNumbers
-import { Module } from '@nestjs/common';
-
-import ProductModule from './product/product.module';
-
-@Module({
-  imports: [ProductModule],
-})
-export class AppModule {}
-```
-
-### Shared Modules
-
-- In **Nest**, modules are `singletons` (design patterns) by default, and thus you can share the same instance of any provider between multiple modules effortlessly.
-
-- Every module is automatically a **shared module**.
-
-![Diagram Shared Module In NestJS](/static/images/blogs/shared-module.png)
-
-```ts:core/logger/logger.module.ts showLineNumbers
-import { Module } from '@nestjs/common';
-
-import LoggerService from './logger.service';
-
-@Module({
-  providers: [LoggerService],
-  exports: [LoggerService],
-})
-export default class LoggerModule {}
-```
-
-```ts:modules/product/product.module.ts showLineNumbers
-import { Module } from '@nestjs/common';
-
-import LoggerModule from 'core/logger/logger.module';
-
-import ProductController from './product.controller';
-import ProductService from './product.service';
-
-@Module({
-  imports: [LoggerModule],
-  controllers: [ProductController],
-  providers: [ProductService],
-})
-export class ProductModule {}
-
-// Import similar LoggerModule for ShopMonitoringModule and PriceMonitoringModule.
-```
-
-### Global Modules
-
-- In the showcased example within the **shared module section**, the **LoggerModule** undergoes multiple imports across three distinct modules—namely, **ProductModule, ShopMonitoringModule, and PriceMonitoringModule**.
-
-- This redundancy is both **noticeable and avoidable**. To address this issue, **Nest** offers a feature known as the **Global Module**.
-
-- Rather than importing the **LoggerModule** in each module requiring its functionality, we can simplify the process by importing the **LoggerModule** just once in the **AppModule** (the root module) and applying the `@Global()` decorator to the class, turning it into a **Global Module**.
-
-- This approach significantly reduces redundancy and promotes a more efficient and maintainable code structure.
-
-![Diagram Global Module In NestJS](/static/images/blogs/global-module.png)
-
-- `@Global()` decorator make the module global, that you want to provide a set of providers which should be available everywhere:
-
-```ts:core/logger/logger.module.ts showLineNumbers
-import { Module, Global } from '@nestjs/common';
-
-import LoggerService from './logger.service';
-
-@Global()
-@Module({
-  providers: [LoggerService],
-  exports: [LoggerService],
-})
-export class LoggerModule {}
-```
-
-- Import **LoggerModule** into **AppModule** (root module):
-
-```ts:app.module.ts showLineNumbers
-import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
-
-import { LoggerModule } from './core/logger/logger.module';
-import { ProductModule } from './modules/product/product.module';
-import { ShopMonitoringModule } from './modules/shop-monitoring/shop-monitoring.module';
-import { PriceMonitoringModule } from './modules/price-monitoring/price-monitoring.module';
-
-@Module({
-  imports: [ProductModule, ShopMonitoringModule, PriceMonitoringModule, LoggerModule],
-  controllers: [],
-  providers: [],
-})
-export class AppModule {}
-```
-
-- Using **LoggerService** in **ProductService** (We do not need to import **LoggerModule** into **ProductModule**):
-
-```ts:modules/product/product.service.ts showLineNumbers
-import { Injectable } from '@nestjs/common';
-
-import { LoggerService } from '../../core/logger/logger.service';
-
-@Injectable()
-export class ProductService {
-  constructor(private logger: LoggerService) {}
-
-  async findAll(): Promise<any> {
-    this.logger.log('Get all products');
-
-    return [];
-  }
+// ❌ Not pure – changes something outside
+let counter = 0;
+function addAndCount(a, b) {
+  counter++;
+  return a + b;
 }
 ```
 
-### Dynamic Modules
+The first one is predictable.
+The second one depends on an external variable, so it’s not pure.
 
-- This is a **feature** that allows you to easily create a custom module that can **register and configure providers dynamically**.
+---
 
-- Following is an example of a **dynamic module** definition for a `DatabaseModule`:
+## **Pure Functions in React**
 
-```ts:core/database/database.providers.ts showLineNumbers
-import { Connection } from './connection.provider';
+You can think of a React component like a math formula:
 
-import { createConnection, Repository } from 'typeorm'; // Assuming TypeORM for database interaction
+```txt
+UI = f(state, props)
+```
 
-export function createDatabaseProviders(options, entities): any[] {
-  const providers = entities.map((entity) => ({
-    provide: `${entity}Repository`, // Dynamic provider name based on the entity
-    useFactory: (connection: Connection) => connection.getRepository(entity),
-    inject: [Connection],
-  }));
+* When `props` and `state` are the same, the UI should also be the same.
+* This makes it possible for React to compare the **previous and next Virtual DOM** and update only what has changed.
 
-  return [
-    {
-      provide: 'DATABASE_CONNECTION',
-      useFactory: async () => {
-        const connection = await createConnection({
-          ...options,
-          entities: entities,
-        });
-        return connection;
-      },
-    },
-    ...providers, // Include additional providers related to entities
-  ];
+---
+
+## **Why Does It Matter?**
+
+If your component is pure:
+
+* React knows “same input → same output.”
+* During the Virtual DOM diff, if the output hasn’t changed, React can **skip real DOM updates**, so the browser doesn’t repaint.
+* It’s easier to debug because the output is predictable.
+
+⚠️ Note: A pure component doesn’t stop React from re-rendering the function.
+It only ensures that if the Virtual DOM output is the same, the real DOM won’t be updated.
+If you want to skip the re-render itself, you can use `React.memo()`.
+
+If your component is not pure:
+
+* It might return different UI even with the same `props`.
+* React won’t be able to optimize rendering correctly.
+* For example, calling `fetch`, `Math.random()`, or `Date.now()` directly inside render makes it impure.
+
+---
+
+## **React Render and Effect Flow**
+
+### **Render Phase (must stay pure):**
+
+1. React calls the component function.
+2. It calculates the Virtual DOM based on `props` + `state`.
+3. React compares the new Virtual DOM with the previous one (diff).
+4. If they’re different → update real DOM.
+   If they’re the same → skip update.
+
+### **Effect Phase (handles side effects):**
+
+After rendering, React runs these hooks:
+
+* `useEffect` → for **async** side effects (API calls, event listeners)
+* `useLayoutEffect` → for **sync** DOM operations (reading size, adjusting layout)
+
+👉 React forces side effects to live inside these hooks to keep the render phase pure.
+This ensures that the same `props` and `state` always produce the same UI.
+
+---
+
+## **Example: Pure vs Impure**
+
+### ✅ **Pure Component**
+
+```jsx
+function Hello({ name }) {
+  return <h1>Hello {name}</h1>;
 }
 ```
 
-```ts:core/database/database.module.ts showLineNumbers
-import { Module, DynamicModule } from '@nestjs/common';
+Same `props.name` → same UI every time.
 
-import { createDatabaseProviders } from './database.providers';
-import { Connection } from './connection.provider';
+---
 
-@Module({
-  providers: [Connection],
-})
-export class DatabaseModule {
-  static forRoot(entities = [], options?): DynamicModule {
-    const providers = createDatabaseProviders(options, entities);
-    return {
-      module: DatabaseModule,
-      providers: providers,
-      exports: providers,
-    };
-  }
+### ❌ **Impure Component**
+
+```jsx
+let calls = 0;
+
+function HelloCounter({ name }) {
+  calls++; // changes external variable
+  return <h1>Hello {name}, rendered {calls} times</h1>;
 }
 ```
 
-> **Hint**: The `forRoot()` method may return a _dynamic module_ either synchronously or asynchronously.
+Even with the same `props.name`, the output changes — not pure.
+React can’t guarantee consistency here.
 
-- This **module** defines the `Connection` provider by default (in the `@Module()` decorator metadata), but additionally - depending on the **entities and options** objects passed into the `forRoot()` method - exposes a collection of providers, for example, **repositories**.
+---
 
-- The `DatabaseModule` can be imported and configured in the following manner:
+## **Quick Practice**
 
-```ts showLineNumbers
-import { Module } from '@nestjs/common';
+Is this component pure?
 
-import { DatabaseModule } from 'core/database/database.module';
-import { User } from 'modules/user/user.entity.ts';
-import { Product } from 'modules/product/product.entity.ts';
-
-@Module({
-  imports: [
-    DatabaseModule.forRoot([User, Product], {
-      type: 'postgres',
-      host: 'localhost',
-      port: 3306,
-      username: 'root',
-      password: 'password',
-      database: 'mydatabase',
-    }),
-  ],
-})
-export class AppModule {}
+```jsx
+function Greeting({ name }) {
+  let upper = name.toUpperCase();
+  return <h1>Hello {upper}</h1>;
+}
 ```
 
-## Conclusion
+✅ **Yes, it’s pure!**
+`upper` is recalculated on every render, but as long as `name` stays the same, the output stays the same too.
 
-- Understanding and effectively utilizing modules in **NestJS** is essential for building **scalable and maintainable** applications.
-- Whether organizing feature-specific code, sharing providers, optimizing global functionality, or dynamically configuring modules, **NestJS** modules offer a robust foundation for application development.
+---
 
-## References
+## **Summary**
 
-- [Overview Modules In NestJS](https://docs.nestjs.com/modules)
-- [Fundamentals - Dynamic modules](https://docs.nestjs.com/fundamentals/dynamic-modules)
-
-Happy reading! <Twemoji emoji="clinking-beer-mugs" />
+* **Pure function** → same input, same output, no side effects.
+* **React render** should stay pure → `UI = f(state, props)`.
+* **Side effects** go into `useEffect` or `useLayoutEffect`.
+* A pure component can still re-render, but the Virtual DOM diff ensures the real DOM doesn’t update unnecessarily.
+* Keeping things pure makes React faster and more predictable.

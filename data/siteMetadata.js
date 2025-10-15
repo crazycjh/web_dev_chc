@@ -1,38 +1,44 @@
 const siteMetadata = {
-  title: "Karhdo's Blog - Coding Adventure",
-  author: 'Trong Khanh',
-  fullName: 'Do Trong Khanh',
-  headerTitle: "Karhdo's Blog",
-  description: 'My desire to practice my skills and share my acquired knowledge fuels my endeavors.',
+  title: "ChunHao's Blog - Coding Journey",
+  author: 'Chun Hao',
+  fullName: 'Chun Hao Chen',
+  headerTitle: "ChunHao's Blog",
+  description:
+    'Documenting and sharing knowledge, technical insights, and practical experiences in software development for mutual learning and growth.',
   language: 'en-us',
-  theme: 'system',
-  siteUrl: 'https://karhdo.dev',
-  analyticsURL: 'https://analytics.karhdo.dev/share/Z3eSINRnbzydz1gK/karhdo.dev',
-  siteRepo: 'https://github.com/Karhdo/karhdo.dev',
+  theme: 'dark',
+  siteUrl: 'https://blog.chczee.dpdns.org/',
+  analyticsURL: '',
+  siteRepo: 'https://github.com/crazycjh/web_dev_chc',
   siteLogo: '/static/images/avatar.jpg',
   image: '/static/images/avatar.jpg',
-  socialBanner: '/static/images/projects/karhdo-blog.png',
-  email: 'dotrongkhanh.dev@gmail.com',
-  github: 'https://github.com/Karhdo',
-  facebook: 'https://www.facebook.com/karhdo.dev',
-  linkedin: 'https://www.linkedin.com/in/karhdo',
-  twitter: 'https://twitter.com/karhdo',
-  youtube: 'https://youtube.com',
+  socialBanner: '',
+  email: 'chchen.zee@gmail.com',
+  github: 'https://github.com/crazycjh',
+  facebook: 'https://www.facebook.com/jeanhao.chen',
+  linkedin: 'https://www.linkedin.com/in/chchen-dev',
+  twitter: '',
+  youtube: '',
   locale: 'en-US',
   stickyNav: false,
   socialAccounts: {
-    github: 'Karhdo',
-    linkedin: 'karhdo',
-    facebook: 'karhdo.dev',
+    github: 'crazycjh',
+    linkedin: 'chchen-dev',
+    facebook: 'jeanhao.chen',
   },
+  /*
   analytics: {
     umamiAnalytics: {
       umamiWebsiteId: process.env.UMAMI_WEBSITE_ID,
     },
   },
+  */
+  /*
   newsletter: {
     provider: 'buttondown',
   },
+  */
+  /*
   comments: {
     provider: 'giscus',
     giscusConfig: {
@@ -50,6 +56,7 @@ const siteMetadata = {
       inputPosition: 'bottom',
     },
   },
+  */
   search: {
     provider: 'kbar',
     kbarConfig: {

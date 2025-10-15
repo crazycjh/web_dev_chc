@@ -17,13 +17,13 @@ export default function LanguageSwitcher() {
   const handleLocaleChange = (newLocale: string) => {
     router.replace(pathname, { locale: newLocale });
   };
-
+2
   return (
     <div className="flex items-center gap-2">
       <select
         value={locale}
         onChange={(e) => handleLocaleChange(e.target.value)}
-        className="rounded-md border border-gray-300 bg-white px-3 py-1 text-sm text-gray-700 transition-colors hover:bg-gray-50 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
+        className="focus:border-primary focus:ring-primary rounded-md border border-gray-300 bg-white px-3 py-1 text-sm text-gray-700 transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
         aria-label="Select language"
       >
         {routing.locales.map((loc) => (
