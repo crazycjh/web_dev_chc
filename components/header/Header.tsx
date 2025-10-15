@@ -8,7 +8,7 @@ import headerNavLinks from '@/data/headerNavLinks';
 
 import Link from '@/components/ui/Link';
 
-import Logo from 'public/static/images/logo.svg';
+import Image from 'next/image';
 
 import MobileNav from './MobileNav';
 import ThemeSwitch from './ThemeSwitch';
@@ -30,11 +30,11 @@ const Header = () => {
     <header className={headerClass}>
       <div className="mx-auto flex max-w-4xl items-center justify-between px-3 xl:max-w-5xl xl:px-0">
         <Link href="/" aria-label={siteMetadata.headerTitle} className="flex items-center">
-          <div className="animate-wave">
-            <Logo className="fill-dark dark:fill-white" />
+          <div className="">
+            <Image src="/static/icons/andyIcon.png" alt="Logo" width={40} height={40} className="rounded-full" />
           </div>
           <div className="group ml-2 text-xl font-bold transition duration-300">
-            Karhdo.dev
+            CHC.dev
             <span className="block h-0.5 max-w-0 bg-black transition-all duration-500 group-hover:max-w-[85%] dark:bg-white"></span>
           </div>
         </Link>
