@@ -27,7 +27,7 @@ export default function Home({ posts }) {
       {/* Introduce myself */}
       <div className="mt-8 dark:divide-gray-700 md:mt-8">
         <Greeting />
-        <div className="flex flex-col justify-between md:my-4 md:pb-8 xl:flex-row">
+        <div className="flex flex-col justify-between md:my-4 md:pb-8 xl:flex-row xl:gap-4">
           <Avatar />
           <div className="my-auto flex flex-col text-lg leading-8 text-gray-600 dark:text-gray-400">
             <Heading />

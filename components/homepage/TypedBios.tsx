@@ -23,39 +23,35 @@ const TypedBios = () => {
     <div>
       <ul id="bios" className="hidden">
         <li>
-          I'm aliased as <b className="font-medium">Karhdo</b> at work.
+          I'm <b className="font-medium">Andy</b>, your friendly neighborhood developer{' '}
+          <Twemoji emoji="technologist" />.
         </li>
         <li>
-          I live in <b className="font-medium">Ho Chi Minh, Viet Nam</b>.
+          I live in <b className="font-medium">Taiwan</b> <Twemoji emoji="flag-taiwan" />.
         </li>
         <li>
-          I was born in the beautiful <b className="font-medium">Quang Ngai</b> city.
+          My background: <b className="font-medium">EE → CS</b> (Bachelor to Master's).
         </li>
         <li>
-          My first programming language I learned was <b className="font-medium">C++</b>.
-        </li>
-        <li>I love web development.</li>
-        <li>
-          I'm focusing on building <b className="font-medium">Social Analytics Software</b>.
+          I code mainly with <b className="font-medium">Vue/Nuxt & Next.js</b>.
         </li>
         <li>
-          I work mostly with <b className="font-medium">Javascript/Typescript</b> technologies.
+          I love automating boring stuff with <b className="font-medium">n8n</b> and scripts.
         </li>
         <li>
-          I'm a dog-person <Twemoji emoji="dog" />.
+          I deploy on <b className="font-medium">Cloudflare</b> <Twemoji emoji="cloud" />.
         </li>
         <li>
-          I'm a sporty-guy. I love
-          <span className="ml-1">
-            <Twemoji emoji="tennis" />, <Twemoji emoji="soccer-ball" />
-          </span>
-          .
+          I write to <b className="font-medium">share what I learn</b> and grow together.
         </li>
         <li>
-          I love listening <Twemoji emoji="musical-keyboard" /> and rap music.
+          Coffee <Twemoji emoji="hot-beverage" /> fuels my code.
         </li>
         <li>
-          I love playing video game <Twemoji emoji="video-game" />, LoL is my favorite one.
+          I'm into <b className="font-medium">side projects</b> and experiments.
+        </li>
+        <li>
+          Learning new tech is my <Twemoji emoji="fire" /> passion.
         </li>
       </ul>
       <span ref={el} className="text-neutral-900 dark:text-neutral-200" />

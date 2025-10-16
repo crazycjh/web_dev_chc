@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import Image from '@/components/ui/Image';
+import Image from 'next/image';
 
 const Avatar = () => {
   const ref = useRef<HTMLDivElement>(null);
@@ -56,8 +56,8 @@ const Avatar = () => {
       style={{ perspective: '800px' }}
       ref={ref}
     >
-      <div style={style} className="max-h-[430px] overflow-hidden rounded-md transition-all duration-200 ease-out">
-        <Image src={'/static/images/avatar.jpg'} alt="avatar" width={430} height={430} />
+      <div style={style} className="relative h-[430px] w-[430px] overflow-hidden rounded-md transition-all duration-200 ease-out">
+        <Image src={'/static/images/avatar.jpg'} alt="avatar" fill className="object-cover" />
       </div>
     </div>
   );

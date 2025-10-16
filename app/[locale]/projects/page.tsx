@@ -15,9 +15,8 @@ export default async function Projects() {
     })
   );
 
-  const description = 'My open-source side projects and stuff that I built with my colleagues at work';
+  const description = 'My open-source personal projects';
 
-  const workProjects = projectsData.filter(({ type }) => type === 'work');
   const sideProjects = projectsData.filter(({ type }) => type === 'self');
 
   return (
@@ -31,20 +30,6 @@ export default async function Projects() {
         </div>
 
         <div className="container py-12">
-          <h3 className="mb-4 text-3xl font-extrabold leading-9 tracking-tight text-gray-900 dark:text-gray-100">
-            Work
-          </h3>
-          <div className="-m-4 flex flex-wrap">
-            {workProjects.map((project) => (
-              <ProjectCard key={project.title} project={project} />
-            ))}
-          </div>
-        </div>
-
-        <div className="container py-12">
-          <h3 className="mb-4 text-3xl font-extrabold leading-9 tracking-tight text-gray-900 dark:text-gray-100">
-            Side projects
-          </h3>
           <div className="-m-4 flex flex-wrap">
             {sideProjects.map((project) => (
               <ProjectCard key={project.title} project={project} />
