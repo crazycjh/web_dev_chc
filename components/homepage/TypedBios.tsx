@@ -23,8 +23,8 @@ const TypedBios = () => {
     <div>
       <ul id="bios" className="hidden">
         <li>
-          I'm <b className="font-medium">Andy</b>, your friendly neighborhood developer{' '}
-          <Twemoji emoji="technologist" />.
+          I'm <b className="font-medium">Andy</b>, your friendly neighborhood developer <Twemoji emoji="technologist" />
+          .
         </li>
         <li>
           I live in <b className="font-medium">Taiwan</b> <Twemoji emoji="flag-taiwan" />.

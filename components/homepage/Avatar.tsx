@@ -56,7 +56,10 @@ const Avatar = () => {
       style={{ perspective: '800px' }}
       ref={ref}
     >
-      <div style={style} className="relative h-[430px] w-[430px] overflow-hidden rounded-md transition-all duration-200 ease-out">
+      <div
+        style={style}
+        className="relative h-[430px] w-[430px] overflow-hidden rounded-md transition-all duration-200 ease-out"
+      >
         <Image src={'/static/images/avatar.jpg'} alt="avatar" fill className="object-cover" />
       </div>
     </div>

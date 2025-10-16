@@ -7,9 +7,9 @@ const ShortDescription = () => {
         <strong className="font-semibold text-gray-900 dark:text-gray-100">Bachelor's in EE</strong>.
       </p>
       <p>
-        I work with{' '}
-        <strong className="font-semibold text-gray-900 dark:text-gray-100">Vue.js, Nuxt.js, Next.js</strong>, and have
-        experience in <strong className="font-semibold text-gray-900 dark:text-gray-100">CI/CD and Docker</strong>.
+        I work with <strong className="font-semibold text-gray-900 dark:text-gray-100">Vue.js, Nuxt.js, Next.js</strong>
+        , and have experience in{' '}
+        <strong className="font-semibold text-gray-900 dark:text-gray-100">CI/CD and Docker</strong>.
       </p>
       <p>
         I enjoy bridging{' '}
