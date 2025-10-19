@@ -13,7 +13,7 @@ import Image from 'next/image';
 import MobileNav from './MobileNav';
 import ThemeSwitch from './ThemeSwitch';
 // import SearchButton from './SearchButton';
-import AnalyticsLink from './AnalyticsLink';
+// import AnalyticsLink from './AnalyticsLink';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 
 const Header = () => {
@@ -65,7 +65,7 @@ const Header = () => {
           />
           <div className="flex items-center">
             <LanguageSwitcher />
-            <AnalyticsLink />
+            {/* <AnalyticsLink /> */}
             <ThemeSwitch />
             {/* <SearchButton /> */}
             <MobileNav />

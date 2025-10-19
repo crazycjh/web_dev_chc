@@ -1,0 +1,151 @@
+---
+title: 'Day 2: What is JSX?'
+date: '2025-10-19'
+lastmod: '2025-10-19'
+tags: ['reactjs']
+summary: 'Learn what JSX is, how it compiles from React 16 to React 17+, and master essential JSX syntax rules for writing React components.'
+---
+
+import Twemoji from './components/ui/Twemoji';
+
+When you write React, it feels nuaturl to just use `<div>`  or `<h1>` like regular HTML.
+But The browser doesn't actually understand this syntax.
+This specail syntax is called **JSX**, and it's React's way of letting us describe the UI in a more intuitive way.
+
+## What is JSX
+
+JSX(JavaScript XML) is a **syntax extension for JavaScript**.
+It lets us describe UI in a way that looks like HTML, making React's code easier to read and write.
+
+But remember: browsers don't understand JSX. It must first be **compiled** by tools like Babel, SWC, or esbuild into plain JavaScript before it can run
+
+## How JSX Compiles
+
+### React 16 and Earlier
+
+In React 16 and before, JSX was compiled into `React.createElement(...)`
+
+```jsx
+function Welcome() {
+  return <h1>Hello</h1>;
+}
+const element = <Welcome />;
+```
+
+Compiled result:
+
+```js
+function Welcome() {
+  return React.createElement("h1", null, "Hello");
+}
+const element = React.createElement(Welcome, null);
+```
+
+That's why every file had to `import React from "react"`, otherwise JSX woundn't work.
+
+### React 17+ (including 18 and 19)
+
+Since React 17, JSX used the **new JSX Transform**. Instead of calling `React.createElement`, it calls `_jsx` / `_jsxs` from `react/jsx-runtime`
+
+```jsx
+function Welcome() {
+  return <h1>Hello</h1>;
+}
+const element = <Welcome />;
+```
+
+Compiled result:
+
+```js
+import { jsx as _jsx } from "react/jsx-runtime";
+
+function Welcome() {
+  return _jsx("h1", { children: "Hello" });
+}
+const element = _jsx(Welcome, {});
+```
+
+👉 Benefits:
+
+* No need to `import React` in every file.
+* `_jsx` works the same as `React.createElement`: it creates React elements (Virtual DOM objects)
+* `jsxs` is used when there are multiple children.
+
+## JSX Syntax Essentials
+
+1. **Insert expressions with `{}`**
+
+   ```jsx
+   const name = "Andy";
+   <h1>Hello, {name.toUpperCase()}!</h1>
+   ```
+
+   👉 Only expressions are allowed, not `if` / `for` / `let`.
+
+2. **Conditional rendering**
+
+   ```jsx
+   {isLogin ? <Dashboard /> : <Login />}
+   {isAdmin && <button>Delete</button>}
+   ```
+
+3. **List rendering**
+
+   ```jsx
+   <ul>
+     {items.map(item => <li key={item.id}>{item.name}</li>)}
+   </ul>
+   ```
+
+   ⚠️ Always include a `key` so React can efficiently track elements.
+
+4. **Attribute differences**
+
+   * `class` → `className`
+   * `for` → `htmlFor`
+   * DOM attributes use camelCase (`onClick`, `tabIndex`)
+
+5. **Single root element**
+
+   ```jsx
+   // ❌ Wrong
+   return (
+     <h1>Hello</h1>
+     <p>World</p>
+   );
+
+   // ✅ Correct
+   return (
+     <>
+       <h1>Hello</h1>
+       <p>World</p>
+     </>
+   );
+   ```
+
+## React Mental Model: UI = f(state, props)
+
+In React, the UI can be seen as a function:
+
+```txt
+UI = f(state, props)
+```
+
+That means: given the same state and props, the componet should always return the same UI.
+
+## Common Mistakes
+
+* JSX ≠ HTML - it's syntax sugar that compiles into JavaScript.
+* Trying to render objects directly: `<p>{{ name: "Andy" }}</p>` → React will throw an error.
+* Using lowercase for component names → React thinks it’s an HTML tag.
+* Assuming JSX always compiles to `React.createElement` → since React 17+, it compiles into `_jsx` / `_jsxs`
+
+## Summary
+
+* JSX lets us describe UI in React using HTML-like syntax.
+* Browsers don’t understand JSX → it must be compiled to JavaScript.
+* React 16 → compiled to `React.createElement`.
+* React 17+ (including 18/19) → compiled to `_jsx` / `_jsxs`.
+* JSX supports expressions, conditional rendering, and list rendering.
+* Pay attention to attribute naming (`className`, `htmlFor`) and the single-root rule.
+* React’s mental model is `UI = f(state, props)`, and JSX simply makes writing that function more intuitive.
