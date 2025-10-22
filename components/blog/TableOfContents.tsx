@@ -38,7 +38,8 @@ const TableOfContents = (props: TableOfContentsProps) => {
     console.log(toc);
 
     toc.forEach(({ url }) => {
-      const element = document.querySelector(url);
+      // Use getElementById to avoid CSS selector issues with IDs starting with numbers
+      const element = url.startsWith('#') ? document.getElementById(url.slice(1)) : document.querySelector(url);
 
       if (element) {
         observer.observe(element);
@@ -47,7 +48,8 @@ const TableOfContents = (props: TableOfContentsProps) => {
 
     return () => {
       toc.forEach(({ url }) => {
-        const element = document.querySelector(url);
+        // Use getElementById to avoid CSS selector issues with IDs starting with numbers
+        const element = url.startsWith('#') ? document.getElementById(url.slice(1)) : document.querySelector(url);
 
         if (element) {
           observer.unobserve(element);

@@ -1,0 +1,177 @@
+---
+title: 'Day 3: The Lifecycle of a React Component'
+date: '2025-10-22'
+lastmod: '2025-10-22'
+tags: ['reactjs']
+summary: 'Learn about React component lifecycle - how components mount, update, and unmount - and understand the differences between class component lifecycle methods and function component Hooks.'
+---
+
+import Twemoji from './components/ui/Twemoji';
+
+When we build with React, every component goes through a jurney - **from being created -> updated -> removed**.
+This jurney is called the **component lifecyle**.
+Understanding it helps us put our logic in the right place and avoid common problem like hitting APIs too many times or causing memory leaks.
+
+---
+
+## What Is a Lifecycle?
+
+A React component's lifecycle has three main statges:
+
+1. **Mount** - when the component first appears in the DOM
+2. **Update** - when state or props change, trigger a re-render
+3. **Unmount** - when the component is removed from the DOM
+
+Class component use **lifecycle methods**,
+while function component use **Hooks** to handle these phases.
+
+--- 
+## Lifecylce in Class Components
+
+### initialize state **before** rendering 
+
+You should always initialize state **before** the first render,
+either in the constructore or directly as a class field.
+
+```jsx
+class Example extends React.Component {
+  // ✅ Correct: initialize state here
+  state = { message: "Hello" };
+
+  render() {
+    return <h1>{this.state.message}</h1>;
+  }
+}
+```
+
+---
+
+### `componentDidMount`
+
+* **When it runs:** after the first render and once the component is mounted to the DOM
+* **what it's for:** tarting **side effect** like fetching data, subscribing to events, or manipulating the DOM
+* **Important:** This is *not* the best place to initialize state.
+  Calling `setState` here triggers **an extra render**, which might cause flickering.
+
+```jsx
+class Example extends React.Component {
+  state = { message: "Hello" };
+
+  componentDidMount() {
+    // This is "after mount", not initialization
+    this.setState({ message: "Mounted!" });
+  }
+}
+```
+
+---
+
+### `componentDidUpdate(prevProps, prevState)`
+
+* **When it runs:** after props or state have changed, and the DOM has already been updated
+* **What it's for:** reacting to *specific* changes (by comparing with previous values)
+* **Important:** Never call `setState` here unconditionally - it can cause an infinite loop!
+
+```jsx
+componentDidUpdate(prevProps) {
+  if (this.props.userId !== prevProps.userId) {
+    this.fetchUser(this.props.userId);
+  }
+}
+```
+
+---
+
+### `componentWillUnmount`
+
+* **When it runs:** right before the component is removed from the DOM
+* **what it's for:** cleaning up side effects (like `clearInterval`, removing event listeners, or closing WebSocket connctions) to prevent memory leaks
+
+---
+
+## Function Components and Hooks
+
+Function components don't have lifecycle **methods**, but they go through the same lifecycle stages - handle with **Hooks** instead.
+
+### initialize state
+
+Use the initial value of `useState` :
+
+```jsx
+function Example() {
+  const [message] = React.useState(() => "Hello"); // This is initialization
+  return <h1>{message}</h1>;
+}
+```
+
+---
+
+### handle side effects with `useEffect`
+
+```jsx
+// Runs once after mount (like componentDidMount)
+useEffect(() => {
+  fetch("/api/data").then(/* ... */);
+}, []);
+
+// Runs when a dependency changes (like componentDidUpdate)
+// Note: it also runs once on mount
+useEffect(() => {
+  console.log("count changed:", count);
+}, [count]);
+
+// Cleanup before unmount (like componentWillUnmount)
+useEffect(() => {
+  const id = setInterval(/* ... */);
+  return () => clearInterval(id);
+}, []);
+```
+
+---
+
+## Common Mistakes and Fixs
+
+### 1) Doing side effects during render
+
+* ❌ Example: calling `fetch()`, manipulating the DOM, or using `setTimeout` directly in render
+* **Problems:** slows down rendering, runs repeatedly on every re-render, worse in Strict Mode
+* ✅ **Fix:** Move side effects into `useEffect` or lifecycle methods; render should only calculate UI
+
+---
+
+### 2) Forgetting to clean up side effects
+
+* ❌ `setInterval`, event listeners, or WebSocket left running -> **memory leaks**
+* ✅ **Fix:** clean up in `componentWillUnmount` or in the **return function** of `useEffect`
+* Note: `setTimeout` ends automatically, but still clean it up if it triggers `setState` after umount.
+
+--- 
+
+### 3) Calling `setState` unconditionally in `componentDidUpdate`
+
+* ❌ Cause an infinite render loop
+* ✅ Compare `prevProps` / `prevState` first and only update when necessary
+
+---
+
+## Practical Tips — Put Things in the Right Place
+
+| Purpose              | Class Component                   | Function Component          |
+| -------------------- | --------------------------------- | --------------------------- |
+| **Initialize state** | `constructor` / class field       | `useState` initial value    |
+| **Run side effects** | `componentDidMount`               | `useEffect([])`             |
+| **React to changes** | `componentDidUpdate` + comparison | `useEffect([deps])`         |
+| **Clean up**         | `componentWillUnmount`            | `useEffect` return function |
+
+> Rule of thumb: keep **render pure** (`UI = f(state, props)`).
+> All interactions with the outside world — I/O, subscriptions, timers, DOM manipulation — belong in the effect phase.
+
+---
+## Summary
+
+* **Initializing state ≠ `componentDidMount`** — it should happen before the first render.
+* `componentDidMount` / `useEffect([])` are for **running effects after mount**.
+* `componentDidUpdate` / `useEffect([deps])` run **after changes**, and you should compare values to avoid loops.
+* Always clean up side effects before unmount.
+* Keep the render phase pure: same props/state → same UI.
+
