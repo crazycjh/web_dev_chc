@@ -1,0 +1,148 @@
+---
+title: 'Day 5: What Is React Reconciliation?'
+date: '2025-10-28'
+lastmod: '2025-10-28'
+tags: ['reactjs']
+summary: 'Learn how React Reconciliation works - the smart update process that compares Virtual DOM trees using three key rules: different element types get replaced, same types get updated, and lists use keys for tracking. This efficient diffing algorithm reduces O(n³) complexity to O(n), updating only what actually changed in the real DOM.'
+---
+
+import Twemoji from './components/ui/Twemoji';
+
+Have you ever wondered why, when you call setState, React doesn't rebuild your entire webpage?
+That's because React has a smart system behind scenes called Reconciliation -
+it's how React figure out what actually need to change in DOM.
+
+1. What is Reconciliation?
+
+Reconciliation is basically React's update process.
+
+Whenever a component’s state or props change, React goes through these steps:
+
+It creates a new Virtual DOM tree.
+
+It compares the new Virtual DOM with the previous one.
+
+It finds the differences (the “diff”).
+
+It updates only the parts of the real DOM that actually changed.
+
+👉 The main goal: update the UI with the fewest DOM operations possible.
+
+2. Because directly touching the DOM is slow.
+   Tradictional libraries (liek jQuery) might repaint entire section even for tiny changes.
+
+React solves this by keeping a Virtual DOM — a lightweight copy of the UI in memory —
+and by comparing the new tree with the old one. This allows it to figure out exactly which parts should be updated.
+
+That’s the power of reconciliation.
+
+4. The Three Main Rules of React’s Diffing Algorithm
+   🧩 Rule 1: Different element types → replace the whole subtree
+   ```jsx
+<div>Hello</div>
+// becomes
+<p>Hello</p>
+```
+
+If the type changes, React doesn’t try to compare the two.
+It simply removes the old `<div>` and builds a new `<p>` from scratch.
+
+🎨 Rule 2: Same element type → keep the node, update props
+
+```jsx
+<div className="red"></div>
+// becomes
+<div className="blue"></div>
+```
+
+Here the type (div) is the same, so React keeps the existing node.
+It just updates the changed props (className from “red” to “blue”).
+If the children didn’t change, React reuses them as well.
+
+📋 Rule 3: Lists rely on keys
+
+<ul>
+  <li key="1">A</li>
+  <li key="2">B</li>
+</ul>
+
+→
+
+<ul>
+  <li key="2">B</li>
+  <li key="1">A</li>
+</ul>
+
+With keys: React can tell that item “A” and “B” still exist but just switched places, so it simply reorders the nodes.
+
+Without keys: React can’t tell — it might delete everything and rebuild the list, causing unnecessary DOM work.
+
+👉 That’s why interviewers love asking: “Why are keys important in React?”
+
+5. Going a bit deeper
+
+In theory, comparing two trees node-by-node is an O(n³) operation — way too expensive.
+React’s heuristic rules (the three above) bring this down to roughly O(n).
+
+It’s not always the absolute minimum number of changes,
+but it’s fast enough and accurate enough for real-world UIs.
+
+6. Common misconceptions
+
+❌ “React re-renders everything.”
+Not really. React re-creates the new Virtual DOM, but it only updates the real DOM where something actually changed.
+
+❌ “Keys are just for loops.”
+No — keys give each element a stable identity so React can track which items were added, removed, or moved.
+
+7. Quick practice
+
+What will React do here?
+
+<ul>
+  <li key="1">Apple</li>
+  <li key="2">Banana</li>
+</ul>
+
+→
+
+<ul>
+  <li key="2">Banana</li>
+  <li key="1">Apple</li>
+</ul>
+
+✅ Answer:
+React sees the same keys (“1” and “2”),
+so it keeps both `<li>` elements and simply swaps their positions — no unnecessary re-creation.
+
+8. Interview answer (natural spoken English)
+
+Reconciliation is basically how React figures out what to update in the DOM.
+When state or props change, React builds a new Virtual DOM and compares it with the old one.
+It doesn’t do a heavy deep check — instead, it follows some simple rules:
+
+If the element type changes, like a `<div>` to a `<p>`, React just replaces that part.
+
+If the type stays the same, React keeps the node and updates its props or text.
+
+For lists, React uses keys to know which items stayed the same or moved.
+With these shortcuts, React can update things fast without redrawing everything.
+
+9. Summary
+
+Reconciliation = React’s update process.
+
+Goal → update the UI efficiently, only where it changed.
+
+Three main rules:
+
+Different type → replace the whole subtree.
+
+Same type → keep and update props/children.
+
+Lists → use keys to track items.
+
+Keys are essential for stable identity and performance.
+
+You don’t need to know the math behind it — just remember:
+React updates smartly, not blindly.
