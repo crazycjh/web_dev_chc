@@ -1,0 +1,115 @@
+---
+title: 'Day 6 : Why is the key prop important in lists?'
+date: '2025-10-28'
+lastmod: '2025-10-28'
+tags: ['reactjs']
+summary: 'Understand why React keys matter in list rendering. Learn how using array indexes as keys causes UI bugs like jumping input values, and why stable unique IDs are essential for proper reconciliation. Discover the difference between correct and incorrect key usage with practical examples.'
+---
+
+import Twemoji from './components/ui/Twemoji';
+
+Have you ever run into this? 
+You add a new task in your React to-do list…
+and suddenly one of your input field jumps to a different item? 😅
+
+That usually happens because you **didn't use a proper `key`**,
+
+---
+
+## what's going on?
+
+In React, the `key` prop helps React **identity which list item is which**.
+When React updates the Virtual DOM, it uses keys to decide how to update the real DOM:
+
+* **Same key** → React treats it as the same element and just updates its content.
+* **Different or missing key** → React treats it as a new element, removes the old one, and builds a new DOM subtree.
+
+---
+
+## Example Code
+
+### ❌ Wrong: Using the array index as the key
+
+```jsx
+function TodoList({ todos }) {
+  return (
+    <ul>
+      {todos.map((todo, index) => (
+        <li key={index}>{todo.text}</li>
+      ))}
+    </ul>
+  );
+}
+```
+
+If you insert a new item at the top, all the indexes shift.
+Because the key equals the index, React thinks `key=0,1,2...` are still the same elements - 
+so it **reuses the wrong DOM nodes**, only updating the text or props.
+
+Result:
+The text looks correct, but internal states like input values, checkbox states, or focus **get attached to the wrong item**, causing UI glitches.
+
+---
+
+### ✅ Correct: Use a stable `id` as the key
+
+```jsx
+function TodoList({ todos }) {
+  return (
+    <ul>
+      {todos.map(todo => (
+        <li key={todo.id}>{todo.text}</li>
+      ))}
+    </ul>
+  );
+}
+```
+
+This way, React can clearly tell:
+
+* Which items are new
+* Which ones just changed
+* Which ones should stay the same
+
+---
+
+## Common Misconceptions
+
+**“Using the index as a key is fine.”**
+❌ Not true - if your list changes (add, delete, reorder), the index isn't stable. React will mis-match items and cause UI bugs.
+
+**“It works even without keys.”**
+⚠️ React will fall back to using indexes as keys, but you might get weired bugs - expecially when your list has inputs, animations, or internal state.
+
+---
+
+## Why This Matters in Real Projects
+
+* keeps the UI and data state consistent (no jumping input values).
+* Improves performance - React only updates what's necessary, not the entire list.
+
+---
+
+### Quick Challenge
+
+what's wrong with this code?
+How would you fix it?
+
+```jsx
+<ul>
+  {['A', 'B', 'C'].map((item, index) => (
+    <li key={index}>
+      <input defaultValue={item} />
+    </li>
+  ))}
+</ul>
+```
+
+--- 
+
+## Summary
+
+* `key` is like an ID card for each list item.
+* A **stable key** lets React reuse elements correctly and update only what’s needed.
+* Using the index (or missing key) causes React to mis-match elements — leading to **wrong reuse** or **unnecessary re-renders**, hurting performance and causing UI bugs.
+* In practice: **always use a unique and stable `id` as the key**.
