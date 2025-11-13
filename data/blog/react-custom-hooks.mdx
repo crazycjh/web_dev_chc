@@ -1,0 +1,86 @@
+---
+title: 'Day 8 : What Problems Do Custom Hooks Solve?'
+date: '2025-11-10'
+lastmod: '2025-11-10'
+tags: ['reactjs']
+summary: 'Exploring how Custom Hooks revolutionized React by solving logic reuse challenges that plagued Class components, HOCs, and Render Props - making code cleaner, more composable, and easier to maintain.'
+---
+
+import Twemoji from './components/ui/Twemoji';
+
+In the history of React, **logic reuse** has always been a challenge.
+Back in the Class component era, we relied on **HOCs** and **Render Props** to absract logic.
+However, both approches led to problems like **Wrapper Hell** or **Nested Hell**, making the codebase hard to read and maintain.
+
+With the rise of Function components and **Hooks**, React introduced a cleaner way to sovle these issues:  **Custom Hooks**.
+
+### What is a Custom Hook?
+
+* A **Custom Hook** is basically a normal JavaScript function.
+* It must start with `use` and can use other hooks inside (`useState`, `useEffect`, etc.).
+* its goal is to extrat **reusable logic** so multiple components can share it - without sharing state.
+
+### Pain Points of Class Components
+
+1. **Scattered logic**: One feature often requires code spread across `componentDidMount`, `componentDidUpdate`, and `componentWillUnmount`.
+2. **Wrapper Hell (HOCs)**: Too many nested HOCs make the component tree deep and props harder to trace.
+3. **Nested Hell (Render Props)**: JSX nesting gets ugly, and parameter naming can easily conflict.
+4. **Reusability is clunky**: Logic is either duplicated or wrapped in HOCs/Render Props, which adds complexity.
+
+### How Do Custom Hooks Solve This?
+
+* **Centralized logic**: No more spreading across lifecycles.
+* **Comosable** : A component can combine multiple hooks seamlessly.
+* **Cleaner UI** : No more wrapper components or deeply nested JSX.
+* **Intuitive** : UI and logic sit together, easy to follow
+
+### Example Comparison
+
+#### Class + HOC
+
+```jsx
+const withAuth = (WrappedComponent) =>
+  class extends React.Component {
+    state = { user: null };
+    componentDidMount() {
+      AuthAPI.check().then((u) => this.setState({ user: u }));
+    }
+    render() {
+      return <WrappedComponent {...this.props} user={this.state.user} />;
+    }
+  };
+
+class Dashboard extends React.Component {
+  render() {
+    return <h1>Hello {this.props.user?.name}</h1>;
+  }
+}
+
+export default withAuth(Dashboard);
+```
+
+#### Function + Custom Hook
+
+```jsx
+function useAuth() {
+  const [user, setUser] = React.useState(null);
+  React.useEffect(() => {
+    AuthAPI.check().then(setUser);
+  }, []);
+  return user;
+}
+
+function Dashboard() {
+  const user = useAuth();
+  return <h1>Hello {user?.name}</h1>;
+}
+```
+
+
+👉 Clearly, **Custom Hooks make components more readable and straightforward**.
+
+### Conclusion
+
+* **Class → HOCs / Render Props**: helped with reuse, but often messy.
+* **Function → Custom Hooks**: cleaner, composable, and intuitive.
+* Custom Hooks are now a **core best practice** in modern React development.

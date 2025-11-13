@@ -1,0 +1,69 @@
+---
+title: 'Day 7 : Why use immutable syntax when updating state?'
+date: '2025-10-28'
+lastmod: '2025-10-28'
+tags: ['reactjs']
+summary: 'Learn why React requires immutable state updates and how reference equality checking works. Understand the difference between primitive and reference comparisons, common pitfalls with object mutations, and best practices for creating new references to trigger re-renders correctly.'
+---
+
+import Twemoji from './components/ui/Twemoji';
+
+In React, you always hear: ＊“Don’t mutate state directly.”*
+Is it because Javascript object are call by reference?
+Not exactly - the real reason is **React can't detect the change if the reference stays the same.**
+
+### How React check for changes
+
+* **  tives (numbers, strings, booleans)** → React compares by value.
+* **References (objects, arrays)** → React compares by reference (memory address).
+
+React doesn't do deep comparison. it only checks if the value or reference changed
+
+### Primitive Example
+
+```jsx
+const [count, setCount] = useState(0);
+
+setCount(1); // new value → React sees change → re-render
+setCount(1); // same value → React sees no change → skip
+```
+
+👉 Simple: if the value is new, React re-renders. If it’s the same, React skips.
+
+
+
+### Reference Example
+
+```jsx
+const [user, setUser] = useState({ name: "Andy" });
+
+// ❌ Wrong: mutate
+user.name = "Jack";
+setUser(user); // same reference → React can’t detect → no re-render
+
+// ✅ Correct: new reference
+setUser({ ...user, name: "Jack" }); // new object → React detects change → re-render
+```
+
+👉 For objects/arrays, React only checks the reference.
+Mutating the old object keeps the same reference, so React thinks nothing changed.
+
+### Common Misunderstandings
+
+* **“It’s because of call by reference.”**
+  Not exactly. The issue is that React only checks reference equality, not the object’s inside.
+* **“Immutable updates are slow.”**
+  They cost a little memory, but guarantee correctness and enable optimizations like `React.memo`
+
+
+### Practical Use
+
+* Arrays → `setTodos([...todos, newTodo])`
+* Objects → `setUser({ ...user, age: 26 })`
+
+### Wrap-Up
+
+* Primitives → compared by value.
+* Objects/arrays → compared by reference, no deep comparison.
+* Mutating keeps the same reference → React can’t detect.
+* Immutable updates create a new reference → React re-renders correctly.

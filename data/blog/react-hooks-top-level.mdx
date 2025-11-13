@@ -1,0 +1,154 @@
+---
+title: 'Day 9: Why must Hooks be called at the top level?'
+date: '2025-11-08'
+lastmod: '2025-11-08'
+tags: ['reactjs']
+summary: ''
+---
+
+import Twemoji from './components/ui/Twemoji';
+
+When learning React, you’ve probably heard this rule:
+
+> **Hooks must be called at the top level.**
+> **Never put them inside if statements, loops, or conditions!**
+
+But why? Is React just being strict?
+
+👉 The real reason is that **React relies on the call order to track hook state**.
+If the order changes, React loses track, and your component breaks.
+
+
+
+## How Hooks Work (Mental Model)
+
+React doesn’t track hooks by variable name.
+Instead, it tracks them by the **order in which they are called**.
+
+You can imagine React keeping an **array of slots** (just a mental model, not the real implementation):
+
+```txt
+First render:
+slot[0] → useState(0)
+slot[1] → useEffect(...)
+slot[2] → useState("Andy")
+
+Second render:
+React matches them by order:
+slot[0] → previous count
+slot[1] → previous effect
+slot[2] → previous name
+```
+
+This “array of slots” is just for understanding.
+Internally, React’s data structure is more complex, but thinking about it like an ordered list makes it clear:
+
+> **Hooks must always be called in the same order on every render.**
+
+
+
+## Why Not in if / loop?
+
+### Wrong Example (if condition)
+
+```jsx
+function Counter({ show }) {
+  if (show) {
+    const [count, setCount] = useState(0); // ❌ Only exists when show = true
+  }
+  const [name, setName] = useState("Andy");
+}
+```
+
+* When `show=true`: React sees `[count, name]`.
+* When `show=false`: React sees `[name]`.
+* The slots shift → everything breaks.
+
+
+
+### Wrong Example (loop)
+
+```jsx
+function Example() {
+  for (let i = 0; i < 3; i++) {
+    const [value, setValue] = useState(i); // ❌ Number of hooks changes
+  }
+  return null;
+}
+```
+
+React can’t know how many times that loop runs.
+The number of hooks is not consistent → mismatch happens.
+
+
+
+## The Correct Way
+
+Always declare hooks at the top level, in the same order every time.
+
+```jsx
+function Counter({ show }) {
+  const [count, setCount] = useState(0);   // ✅ Always slot[0]
+  const [name, setName] = useState("Andy"); // ✅ Always slot[1]
+
+  if (!show) return <div>No counter</div>;
+  return <button onClick={() => setCount(count + 1)}>{count}</button>;
+}
+```
+
+
+
+## Common Misunderstandings
+
+1. ❌ “But isn’t it wasteful to call hooks even when I don’t use them?”
+   ✅ Yes, but this small cost is worth the **predictability**.
+
+2. ❌ “Can I call a hook inside a helper function?”
+   ✅ Yes, as long as that function is **always called** in the same way on every render.
+   That’s exactly why **custom hooks** work.
+
+
+
+## Quick Practice
+
+Which of these will break?
+
+```jsx
+// A
+function Example({ show }) {
+  if (show) {
+    const [count, setCount] = useState(0);
+  }
+  return null;
+}
+
+// B
+function Example() {
+  const [count, setCount] = useState(0);
+  if (count > 0) {
+    const [name, setName] = useState("Andy");
+  }
+  return null;
+}
+
+// C
+function Example() {
+  const [count, setCount] = useState(0);
+  return <button onClick={() => setCount(count + 1)}>{count}</button>;
+}
+```
+
+👉 Answer:
+
+* A ❌
+* B ❌
+* C ✅
+
+
+
+## Summary
+
+* React tracks hooks by **call order**, not by name.
+* Think of it like an **array of slots** that must always align.
+* Hooks must always be called in the same order → no if, no loops.
+* Custom hooks are fine because they’re still called in a predictable, fixed order.

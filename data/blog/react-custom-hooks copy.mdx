@@ -1,0 +1,89 @@
+---
+title: 'Day 10 — What is useEffect?'
+date: '2025-11-10'
+lastmod: '2025-11-10'
+tags: ['reactjs']
+summary: 'Exploring how Custom Hooks revolutionized React by solving logic reuse challenges that plagued Class components, HOCs, and Render Props - making code cleaner, more composable, and easier to maintain.'
+---
+
+import Twemoji from './components/ui/Twemoji';
+
+In React function components, we often need to run **side effects**, like:
+
+* Fetching data
+* adding / removing event listener (scroll, resize)
+* Manipulating the componentDidMount
+* Starting or clearing timers
+
+In class components, this logic was handled in `componentDidMount`, `componentDidUpdate`, and `componentWillUnmount`.
+In function components, the tool for this is **`uesEffect`**.
+
+## Definition
+
+`useEffect` is hook that let you run side effects **after rendering and after DOM is updated**
+It can also return a cleanup function to remove resources when needed.
+
+
+Syntax:
+
+```jsx
+useEffect(() => {
+  // side effect
+  return () => {
+    // cleanup (optional)
+  };
+}, [dependencies]);
+
+```
+
+## When does useEffect run with setState?
+
+Here’s what happens when you call `setState`:
+
+1. **setState is called** → React schedules a re-render
+2. **Render phase** → React runs the component to produce Virtual DOM
+3. **Commit phase** → React updates the real DOM
+4. **useLayoutEffect** runs synchronously (before paint)
+5. **Browser paints** → user sees the updated UI
+6. **useEffect** runs asynchronously (after paint)
+
+👉 This means: **the screen updates first, then `useEffect` runs.**
+
+## Dependency Array
+
+1. **No array** → runs after every render
+2. **Empty array `[]`** → runs only once, after the first render
+3. **Specific dependencies `[value]`** → runs whenever those values change
+
+## cleanup
+
+You can return a cleanup function:
+
+* Runs before the next effect, or when the componet unmounts
+* Prevents memory leaks
+
+```jsx
+useEffect(() => {
+  const handler = () => console.log("resized");
+  window.addEventListener("resize", handler);
+
+  return () => {
+    window.removeEventListener("resize", handler);
+  };
+}, []);
+```
+
+## Common Mistakes
+
+1. Doing API calls directly in render  → should be in `useEffect`
+2. Forgetting cleanup  → memory leaks
+3. Wrong dependency array  → stale data or infinit re-renders
+4. Unconditional `setState` inside effect  → infinie loop
+
+## Summary
+
+* `useEffect` = side effect manager for function components
+* Runs after render and after the UI is painted
+* Three dependency modes: every render, once, or on specific changes
+* Cleanup prevents leaks and handles unmounting
+* Difference from `useLayoutEffect`: async vs sync timing
