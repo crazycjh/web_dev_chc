@@ -1,0 +1,97 @@
+---
+title: 'Day 11: useEffect vs useLayoutEffect — Timing and Use Cases'
+date: '2025-11-13'
+lastmod: '2025-11-13'
+tags: ['reactjs']
+summary: 'Understanding the critical timing difference between useEffect and useLayoutEffect - when to use each hook to prevent UI flicker and optimize performance in React applications.'
+---
+
+import Twemoji from './components/ui/Twemoji';
+
+When learning React, most developers start with `useEffect`. But sometimes you’ll see flickering in the UI, and that’s when `useLayoutEffect` comes in. So what’s the real difference between them?
+
+
+
+### Concept Explanation
+
+* **`useEffect`**: Runs **after the DOM is updated and the browser has painted**.
+
+  * The user first sees the screen, then the effect runs.
+  * Good for async tasks like fetching data, event listeners, logging.
+
+* **`useLayoutEffect`**: Runs **after the DOM is updated but before the paint**.
+
+  * The user only sees the final adjusted UI, no flicker.
+  * Good for DOM operations like measuring or adjusting elements.
+
+
+
+### Code Examples
+
+#### useEffect may cause flicker
+
+```jsx
+function Example() {
+  const ref = React.useRef(null);
+
+  React.useEffect(() => {
+    ref.current.style.backgroundColor = "yellow";
+  }, []);
+
+  return <div ref={ref}>Hello</div>;
+}
+```
+
+➡️ The user first sees the original color, then it jumps to yellow.
+
+#### useLayoutEffect avoids flicker
+
+```jsx
+function Example() {
+  const ref = React.useRef(null);
+
+  React.useLayoutEffect(() => {
+    ref.current.style.backgroundColor = "yellow";
+  }, []);
+
+  return <div ref={ref}>Hello</div>;
+}
+```
+
+➡️ The user immediately sees yellow, no jump.
+
+
+
+### Common Misunderstandings
+
+1. “All side effects should go into `useLayoutEffect`.” → ❌ This blocks paint and hurts performance.
+2. “I can measure DOM in `useEffect`.” → ❌ You’ll read outdated values and cause flicker.
+3. Official guidance: **default to `useEffect`, switch to `useLayoutEffect` only when you need synchronous DOM operations.**
+
+
+
+### Practical Use Cases
+
+* **Handled by CSS (RWD)** → Layout changes with media queries, no JS needed.
+* **Needs `useLayoutEffect`** →
+
+  * Measuring element size for animation or layout.
+  * Setting scroll position (e.g. chat app auto-scroll).
+  * Avoiding flicker in animations (e.g. fade-in).
+  * Integrating with DOM libraries like D3 or GSAP.
+
+
+
+### Small Exercise
+
+Which hook would you use?
+
+1. Adjusting layout based on element width before showing UI.
+2. Sending an API request when the page loads.
+3. Auto-scrolling chat messages to the bottom.
+
+### Summary
+
+* `useEffect` → after paint, async tasks, non-blocking.
+* `useLayoutEffect` → before paint, DOM sync tasks, no flicker.
+* Default to `useEffect`, use `useLayoutEffect` only when DOM operations must run before paint.
