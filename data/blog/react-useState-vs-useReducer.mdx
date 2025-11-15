@@ -1,0 +1,141 @@
+---
+title: 'Day 12: useState vs useReducer — When to Choose Which?'
+date: '2025-11-15'
+lastmod: '2025-11-15'
+tags: ['reactjs']
+summary: 'Learn the key differences between useState and useReducer in React. Understand when to use simple state management versus structured reducers for complex state logic, with practical examples including counters and form management.'
+---
+
+import Twemoji from './components/ui/Twemoji';
+
+In React, we often need to manage state. the most common hook is `useState`,but sometimes people recommend `useReducer`. What's the difference? When should we use each one?
+
+### Core immediately
+* **useState**
+ Simple state management, best for **single values** or **UI-level state**.
+ Update directly with `setState(newValue)`.
+
+* **useReducer**
+  More structured. Best for **complex state** or **multiple update actions**.
+  Update by calling `dispatch(action)` → reducer returns the new state.
+
+
+👉 Think of `useState` as “store a value directly,” while `useReducer` is like “send an action to a factory that produces the new state.”
+
+### Example Code
+
+#### useState: Simple Counter
+
+```jsx
+function Counter() {
+  const [count, setCount] = React.useState(0);
+
+  return (
+    <div>
+      <p>{count}</p>
+      <button onClick={() => setCount(count + 1)}>+1</button>
+      <button onClick={() => setCount(0)}>Reset</button>
+    </div>
+  );
+}
+```
+
+#### useReducer: Multi-Logic Counter
+
+```jsx
+function Counter() {
+  const initialState = { count: 0 };
+
+  function reducer(state, action) {
+    switch (action.type) {
+      case "increment":
+        return { count: state.count + 1 };
+      case "decrement":
+        return { count: state.count - 1 };
+      case "reset":
+        return { count: 0 };
+      default:
+        return state;
+    }
+  }
+
+  const [state, dispatch] = React.useReducer(reducer, initialState);
+
+  return (
+    <div>
+      <p>{state.count}</p>
+      <button onClick={() => dispatch({ type: "increment" })}>+1</button>
+      <button onClick={() => dispatch({ type: "decrement" })}>-1</button>
+      <button onClick={() => dispatch({ type: "reset" })}>Reset</button>
+    </div>
+  );
+}
+```
+
+
+
+### More Complex Example: Form Management
+
+```jsx
+function SignupForm() {
+  const initialState = { name: "", email: "", password: "" };
+
+  function reducer(state, action) {
+    switch (action.type) {
+      case "updateField":
+        return { ...state, [action.field]: action.value };
+      case "reset":
+        return initialState;
+      default:
+        return state;
+    }
+  }
+
+  const [state, dispatch] = React.useReducer(reducer, initialState);
+
+  return (
+    <form>
+      <input
+        value={state.name}
+        onChange={(e) =>
+          dispatch({ type: "updateField", field: "name", value: e.target.value })
+        }
+      />
+      <input
+        value={state.email}
+        onChange={(e) =>
+          dispatch({ type: "updateField", field: "email", value: e.target.value })
+        }
+      />
+      <input
+        type="password"
+        value={state.password}
+        onChange={(e) =>
+          dispatch({ type: "updateField", field: "password", value: e.target.value })
+        }
+      />
+      <button type="button" onClick={() => dispatch({ type: "reset" })}>
+        Reset
+      </button>
+    </form>
+  );
+}
+```
+
+👉 With `useState`, you’d need three setters for three fields. With `useReducer`, the update logic is centralized and cleaner.
+
+
+
+### Common Mistakes
+
+1. **“Always use useReducer”** ❌
+   → Overkill for simple state.
+2. **“Just update objects with useState”** ❌
+   → Gets messy with multiple fields. Reducer is better for complex updates.
+
+
+### Summary
+
+* `useState` → simple state, direct updates.
+* `useReducer` → complex state, centralized logic.
+* In practice: small UI state = useState, bigger flows (forms, carts, multi-step logic) = useReducer.
