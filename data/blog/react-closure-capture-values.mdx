@@ -1,0 +1,143 @@
+---
+title: 'Day 13: Capturing Values in Render & Closure Behavior'
+date: '2025-11-16'
+lastmod: '2025-11-16'
+tags: ['reactjs']
+summary: 'Understand how React callbacks capture values from the moment they are created, causing stale state issues in setInterval, useEffect, and event handlers. Learn to fix this using functional updaters and refs to always access fresh values.'
+---
+
+import Twemoji from './components/ui/Twemoji';
+
+"Have you ever used `setInterval` or a `useEffect` callback and noticed it keeps showing the old state?
+This happens because the callback saves the values from the moment it was created.
+Today, we will explain how this value capturing works in render, and how to avoid callbacks using old data."
+
+## **"Definition / Core Idea"**
+
+"When React renders a component, it uses the props and state from that exact moment.
+If you create a callback during that render (for example in `useEffect`, `setInterval`, `setTimeout`, or event handlers), the callback keeps those values.
+
+Even if the component renders again later, the callback still uses the old values it saved.
+It does not automatically get the newest props or state.
+
+In simple words: **callbacks use the values from the moment they were created, not the values from later renders.**"
+
+## **"Example Code"**
+
+### ❌ "Buggy Example: Interval using old value"
+
+```jsx
+function Counter() {
+  const [count, setCount] = React.useState(0);
+
+  React.useEffect(() => {
+    const id = setInterval(() => {
+      // This callback saved count = 0 from the first render
+      setCount(count + 1);
+    }, 1000);
+
+    return () => clearInterval(id);
+  }, []);
+
+  return <div>Count: {count}</div>;
+}
+```
+
+"The interval keeps using the old value (`count = 0`) because it captured it during the first render."
+
+### ✅ "Correct Example: Use functional updater"
+
+```jsx
+function Counter() {
+  const [count, setCount] = React.useState(0);
+
+  React.useEffect(() => {
+    const id = setInterval(() => {
+      // This uses the newest value
+      setCount(c => c + 1);
+    }, 1000);
+
+    return () => clearInterval(id);
+  }, []);
+
+  return <div>Count: {count}</div>;
+}
+```
+
+"Here, the callback does not use the old captured value.
+React gives the latest value `c`, so the updates are correct."
+
+### "Ref version (also correct)"
+
+```jsx
+function Counter() {
+  const [count, setCount] = React.useState(0);
+  const savedCallback = React.useRef();
+
+  React.useEffect(() => {
+    savedCallback.current = () => {
+      setCount(c => c + 1);
+    };
+  });
+
+  React.useEffect(() => {
+    function tick() {
+      savedCallback.current();
+    }
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  return <div>Count: {count}</div>;
+}
+```
+
+"This separates the callback from the interval and avoids stale values."
+
+---
+
+## **"Common Mistakes"**
+
+* "Thinking `useEffect(fn, [])` always gives fresh state — it does not."
+* "Reading state/props inside a callback without adding them to dependencies."
+* "Putting functions or objects in dependency arrays that change every render."
+* "Believing callbacks automatically get new values — they don't."
+
+---
+
+## **"Why It Matters"**
+
+"This problem often appears in timing functions, async code, or event handlers.
+Knowing value capture helps you avoid bugs where callbacks use old state."
+
+---
+
+## **"Practice"**
+
+```jsx
+function Foo() {
+  const [count, setCount] = React.useState(0);
+
+  React.useEffect(() => {
+    const id = setInterval(() => {
+      console.log("Later:", count);
+    }, 2000);
+    return () => clearInterval(id);
+  }, []);
+
+  return <button onClick={() => setCount(c => c + 1)}>+1</button>;
+}
+```
+
+"What will it log if you click until count = 5?
+
+**Answer:** It logs the value from the moment the interval started (for example, 0), because the callback saved that old value."
+
+---
+
+## **"Summary"**
+
+* "Callbacks capture the props/state from the render where they were created."
+* "They do not update automatically."
+* "Use functional updater or refs to avoid stale values."
+
