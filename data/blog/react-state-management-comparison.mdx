@@ -1,0 +1,123 @@
+---
+title: 'Day 15: Context API vs Local State vs Zustand'
+date: '2025-11-23'
+lastmod: '2025-11-23'
+tags: ['reactjs']
+summary: 'Understanding when to use local state, Context API, or Zustand for state management in React applications. Learn the scope, best practices, and practical examples for each approach.'
+---
+
+import Twemoji from './components/ui/Twemoji';
+
+In React, a bit question is:
+**"Where should I put this state?"**
+
+* Local state works for small things.
+* Context helps avoid prop drilling.
+* And for global state, you can use it across the whole project.
+
+## Concept
+
+### Local State
+
+* Scope: only inside the component.
+* Best for: form inputs, toggles, modal state.
+
+### Context API
+
+* Scope: share across the component tree.
+* Purpose: avoid prop drilling.
+* Best for: theme, user info, language.
+
+### Zustand
+
+* Scope: global state, but lighter than Redux.
+* Features:
+
+  * Very little boilerplate, just hooks.
+  * Easy syntax, store feels like plain JS.
+  * DevTools support, good performance.
+* Best for:
+
+  * Medium to large apps.
+  * Things like shopping cart, auth state, cached API data.
+
+
+
+## Code Examples
+
+### Local State
+
+```jsx
+function Counter() {
+  const [count, setCount] = React.useState(0);
+  return <button onClick={() => setCount(count + 1)}>Count: {count}</button>;
+}
+```
+
+### Context API
+
+```jsx
+const ThemeContext = React.createContext("light");
+
+function App() {
+  return (
+    <ThemeContext.Provider value="dark">
+      <Toolbar />
+    </ThemeContext.Provider>
+  );
+}
+
+function ThemedButton() {
+  const theme = React.useContext(ThemeContext);
+  return <button className={theme}>Theme: {theme}</button>;
+}
+```
+
+### Zustand
+
+```jsx
+import create from "zustand";
+
+const useCounterStore = create(set => ({
+  count: 0,
+  increment: () => set(state => ({ count: state.count + 1 }))
+}));
+
+function Counter() {
+  const { count, increment } = useCounterStore();
+  return <button onClick={increment}>Count: {count}</button>;
+}
+```
+
+
+
+## Common Misunderstandings
+
+* ❌ Context can fully replace Zustand → No, Context is fine for small, rarely changing values. Zustand is better for frequently updated global state.
+* ❌ Put everything in Zustand → No, most state should stay local.
+
+
+
+## Practical Use
+
+* Small app → Local state + Context.
+* Medium/Large app → Zustand for global state.
+* Rule of thumb: keep state in the smallest scope possible.
+     
+
+
+## Quick Practice
+
+Which one would you use?
+
+1. Dark mode switch → Context
+2. Counter button → Local state
+3. Shopping cart → Zustand
+
+
+## Summary
+
+* Local state → simple and small.
+* Context → avoid prop drilling.
+* Zustand → global, lightweight, easy.
+* **Rule: start small, scale when needed.**

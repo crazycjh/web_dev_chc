@@ -1,0 +1,112 @@
+---
+title: 'Day 16: What is Prop Drilling? Why is it a Problem?'
+date: '2025-11-26'
+lastmod: '2025-11-26'
+tags: ['reactjs']
+summary: 'Learn what prop drilling is in React, why passing props through multiple component layers causes maintenance issues, and how to solve it using Context API or state management tools.'
+---
+
+import Twemoji from './components/ui/Twemoji';
+
+Have you ever passed a prop all the way down through 3 or 4 components, even though only the last child really needed it?
+That’s what we call **prop drilling**.
+
+
+### Core Idea
+
+**Prop drilling** means passing data through many layers of components just to reach a deeply nested child, even when those middle components don’t need the data.
+
+
+### Example
+
+#### ❌ The prop drilling way
+
+```jsx
+function App() {
+  const user = { name: "Andy" };
+  return <Parent user={user} />;
+}
+
+function Parent({ user }) {
+  // Parent doesn’t care about user, but still passes it down
+  return <Child user={user} />;
+}
+
+function Child({ user }) {
+  return <h1>Hello {user.name}</h1>;
+}
+```
+
+* `user` is only used in `Child`
+* But it travels through `App → Parent → Child`
+* That’s prop drilling
+
+
+#### ✅ Better way with Context
+
+```jsx
+const UserContext = React.createContext();
+
+function App() {
+  const user = { name: "Andy" };
+  return (
+    <UserContext.Provider value={user}>
+      <Parent />
+    </UserContext.Provider>
+  );
+}
+
+function Parent() {
+  return <Child />;
+}
+
+function Child() {
+  const user = React.useContext(UserContext);
+  return <h1>Hello {user.name}</h1>;
+}
+```
+
+Now only the child that needs the data actually reads it.
+
+
+### Why is it a problem?
+
+* Middle components get bloated with useless props
+* Harder to maintain: one change → many components updated
+* Makes code harder to read
+
+
+### How to fix it?
+
+1. **Context API** → simple and built into React
+2. **State management tools (Redux, Zustand, Jotai)** → better for larger apps
+3. **Refactor your component structure** → keep data closer to where it’s used
+
+
+### Quick Practice
+
+Will this cause prop drilling?
+
+```jsx
+function App() {
+  const theme = "dark";
+  return <Header theme={theme} />;
+}
+
+function Header({ theme }) {
+  return <Navbar theme={theme} />;
+}
+
+function Navbar({ theme }) {
+  return <Button theme={theme} />;
+}
+```
+
+👉 Yes! Because only `Button` uses the `theme`, but all the components must pass it down.
+
+
+### Summary
+
+* Prop drilling = passing props through layers unnecessarily
+* Problems: bloated code, hard to maintain
+* Solutions: Context API, state management tools, or better component design

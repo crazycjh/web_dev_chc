@@ -1,0 +1,135 @@
+---
+title: 'Day 14: Avoiding Stale Closures in React'
+date: '2025-11-16'
+lastmod: '2025-11-16'
+tags: ['reactjs']
+summary: 'Learn how to fix stale closure issues in React using three key techniques: dependency arrays, functional updaters (setState(prev => ...)), and useRef for latest values. Includes proper cleanup patterns for async operations to prevent memory leaks and race conditions.'
+---
+
+import Twemoji from './components/ui/Twemoji';
+
+Yesterday we saw that callbacks capture the state and props of the render when they were created.
+That means they might keep using old values - this is called a **stale closure**.
+Today, let's explore three main techniques to fix it:
+
+1. Dependency arrays
+2. Functional updaters
+3. useRef for the latest value or callback Plus, we’ll also cover cleanups for async operations.
+
+## Core Ideas
+
+1. **Dependency array**
+
+   * Every reactive value used in the effect should appear in deps.
+   * Missing deps → effect won’t re-run → callback uses old values.
+   * Too many deps (unstable objects/functions) → effect runs too often or endlessly.
+
+2. **Stale closure**
+
+   * Callbacks close over the values from one render.
+   * If state changes but effect doesn’t re-run, callback keeps using stale values.
+
+3. **Functional updater**
+
+   * `setState(prev => …)` gives you the most recent state, bypassing stale closure issues.
+
+4. **useRef for latest callback**
+
+   * Good when you want to set up an effect once (like an interval) but still need the latest logic.
+
+5. **Cleanup / async handling**
+
+   * Always clean up timers, cancel requests, or unsubscribe in the cleanup function.
+   * Prevents memory leaks and race conditions.
+
+
+
+## Example Code
+
+#### ❌ Wrong
+
+```jsx
+useEffect(() => {
+  const id = setInterval(() => {
+    setCount(count + 1); // stale count
+  }, 1000);
+  return () => clearInterval(id);
+}, []);
+```
+
+
+
+### ✅ Fix with functional updater
+
+```jsx
+useEffect(() => {
+  const id = setInterval(() => {
+    setCount(prev => prev + 1);
+  }, 1000);
+  return () => clearInterval(id);
+}, []);
+```
+
+
+
+### ✅ Fix with useRef
+
+```jsx
+const callbackRef = useRef();
+
+useEffect(() => {
+  callbackRef.current = () => setCount(c => c + 1);
+});
+
+useEffect(() => {
+  const id = setInterval(() => callbackRef.current(), 1000);
+  return () => clearInterval(id);
+}, []);
+```
+
+
+
+### ✅ Cleanup async
+
+```jsx
+useEffect(() => {
+  const controller = new AbortController();
+  fetch(url, { signal: controller.signal })
+    .then(r => r.json())
+    .then(setData)
+    .catch(err => {
+      if (err.name !== 'AbortError') console.error(err);
+    });
+  return () => controller.abort();
+}, [url]);
+```
+
+
+
+## Common Mistakes
+
+* Missing dependencies → stale values
+* Adding unstable deps → effect runs too often
+* Expecting ref changes to trigger re-render (they don’t)
+* Forgetting cleanup → memory leaks and race conditions
+
+
+
+## Practice
+
+* Try writing a `setTimeout` that updates after 3 seconds. See if it uses stale values.
+* Refactor an interval to use `useRef` when multiple states are involved.
+
+
+
+## Interview Answer (simple English)
+
+> In React, closures can cause callbacks to read old state. To fix this, I usually pick one of three tools. If I just need to update state, I use a functional updater. If I want a stable effect setup, like a timer, I use a ref to hold the latest callback. And in any case, I pay attention to the dependency array and make sure I clean up async operations like fetch or subscriptions.
+
+
+
+## Summary
+
+* **Day 13**: callbacks capture render values → may be stale
+* **Day 14**: fix it with dependencies, functional updater, useRef, and cleanups
+* Be able to explain trade-offs and show code in interviews
