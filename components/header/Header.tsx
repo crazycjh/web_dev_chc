@@ -15,6 +15,7 @@ import ThemeSwitch from './ThemeSwitch';
 // import SearchButton from './SearchButton';
 // import AnalyticsLink from './AnalyticsLink';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
+import { routing } from '@/i18n/routing';
 
 const Header = () => {
   const pathname = usePathname();
@@ -64,7 +65,7 @@ const Header = () => {
             className="hidden h-4 w-px shrink-0 bg-gray-200 dark:bg-gray-600 md:block"
           />
           <div className="flex items-center">
-            <LanguageSwitcher />
+            {routing.locales.length > 1 && <LanguageSwitcher />}
             {/* <AnalyticsLink /> */}
             <ThemeSwitch />
             {/* <SearchButton /> */}

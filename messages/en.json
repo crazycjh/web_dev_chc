@@ -17,5 +17,10 @@
     "tags": "Tags",
     "projects": "Projects",
     "about": "About"
+  },
+  "tags": {
+    "noArticles": "No articles yet",
+    "comingSoon": "Articles for this topic are coming soon. Stay tuned!",
+    "backToBlog": "← Browse all articles"
   }
 }
